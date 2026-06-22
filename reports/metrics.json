@@ -1,0 +1,180 @@
+{
+  "dataset": {
+    "rows": 5000,
+    "churn_rate": 0.503
+  },
+  "best_model": "Random Forest",
+  "models": {
+    "Logistic Regression": {
+      "cv": {
+        "pr_auc": 0.9842535961812431,
+        "roc_auc": 0.9839314215311752,
+        "f1": 0.9331344767586378,
+        "precision": 0.9333664843361512,
+        "recall": 0.9329025844930418,
+        "accuracy": 0.93275,
+        "brier": 0.05019005999856103
+      },
+      "test": {
+        "pr_auc": 0.981920837495963,
+        "roc_auc": 0.9813033269197691,
+        "f1": 0.9292123629112662,
+        "precision": 0.932,
+        "recall": 0.9264413518886679,
+        "accuracy": 0.929,
+        "brier": 0.05435504173506446
+      }
+    },
+    "Decision Tree": {
+      "cv": {
+        "pr_auc": 0.9785158204061754,
+        "roc_auc": 0.9810911942829943,
+        "f1": 0.9468869123252859,
+        "precision": 0.968798751950078,
+        "recall": 0.9259443339960238,
+        "accuracy": 0.94775,
+        "brier": 0.04146788210830076
+      },
+      "test": {
+        "pr_auc": 0.9784738057638899,
+        "roc_auc": 0.9824433679612465,
+        "f1": 0.9531568228105907,
+        "precision": 0.9770354906054279,
+        "recall": 0.9304174950298211,
+        "accuracy": 0.954,
+        "brier": 0.0368123733760588
+      }
+    },
+    "Random Forest": {
+      "cv": {
+        "pr_auc": 0.9981641718127946,
+        "roc_auc": 0.9979026744962819,
+        "f1": 0.9825523429710867,
+        "precision": 0.9855,
+        "recall": 0.9796222664015904,
+        "accuracy": 0.9825,
+        "brier": 0.023409502777777775
+      },
+      "test": {
+        "pr_auc": 0.9981174411217965,
+        "roc_auc": 0.997891924109268,
+        "f1": 0.984984984984985,
+        "precision": 0.9919354838709677,
+        "recall": 0.9781312127236581,
+        "accuracy": 0.985,
+        "brier": 0.0214911
+      }
+    }
+  },
+  "baselines": [
+    {
+      "name": "Majority class",
+      "accuracy": 0.503,
+      "f1": 0.669328010645376,
+      "pr_auc": 0.503,
+      "roc_auc": 0.5
+    },
+    {
+      "name": "Inactive >= 27 days",
+      "accuracy": 0.716,
+      "f1": 0.7310606060606061,
+      "pr_auc": 0.7080143711390576,
+      "roc_auc": 0.7593853378721634
+    }
+  ],
+  "calibrated_test": {
+    "pr_auc": 0.9956392358332312,
+    "roc_auc": 0.9965098743554768,
+    "f1": 0.984,
+    "precision": 0.9899396378269618,
+    "recall": 0.9781312127236581,
+    "accuracy": 0.984,
+    "brier": 0.013994308012018114
+  },
+  "leakage_audit": {
+    "suspects": [
+      "last_login_days",
+      "recency_bucket"
+    ],
+    "with_suspects": {
+      "pr_auc": 0.9981174411217965,
+      "roc_auc": 0.997891924109268,
+      "f1": 0.984984984984985,
+      "precision": 0.9919354838709677,
+      "recall": 0.9781312127236581,
+      "accuracy": 0.985,
+      "brier": 0.0214911
+    },
+    "without_suspects": {
+      "pr_auc": 0.988880574679118,
+      "roc_auc": 0.9887815961374609,
+      "f1": 0.9494163424124513,
+      "precision": 0.9295238095238095,
+      "recall": 0.9701789264413518,
+      "accuracy": 0.948,
+      "brier": 0.046771611111111104
+    }
+  },
+  "drivers": [
+    {
+      "feature": "avg_watch_time_per_day",
+      "importance": 0.19404812347302577
+    },
+    {
+      "feature": "engagement_segment_High",
+      "importance": 0.1366390662071915
+    },
+    {
+      "feature": "watch_hours",
+      "importance": 0.12174319812730697
+    },
+    {
+      "feature": "last_login_days",
+      "importance": 0.08315173153329893
+    },
+    {
+      "feature": "engagement_segment_Low",
+      "importance": 0.07202988662684326
+    },
+    {
+      "feature": "watch_per_profile",
+      "importance": 0.0607127748366884
+    },
+    {
+      "feature": "number_of_profiles",
+      "importance": 0.0584203513054468
+    },
+    {
+      "feature": "recency_bucket_Dormant",
+      "importance": 0.0575884808697043
+    },
+    {
+      "feature": "engagement_segment_Medium",
+      "importance": 0.022875458671704207
+    },
+    {
+      "feature": "recency_bucket_Lapsing",
+      "importance": 0.02178724333047044
+    },
+    {
+      "feature": "monthly_fee",
+      "importance": 0.020325264647089898
+    },
+    {
+      "feature": "subscription_type_Basic",
+      "importance": 0.019119852562240074
+    },
+    {
+      "feature": "payment_method_Crypto",
+      "importance": 0.016476112549367226
+    },
+    {
+      "feature": "age",
+      "importance": 0.013988389042041683
+    },
+    {
+      "feature": "payment_method_Gift Card",
+      "importance": 0.01331951585869633
+    }
+  ]
+}
