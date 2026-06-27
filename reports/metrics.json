@@ -3,7 +3,7 @@
     "rows": 5000,
     "churn_rate": 0.503
   },
-  "best_model": "Random Forest",
+  "best_model": "XGBoost",
   "models": {
     "Logistic Regression": {
       "cv": {
@@ -13,7 +13,7 @@
         "precision": 0.9333664843361512,
         "recall": 0.9329025844930418,
         "accuracy": 0.93275,
-        "brier": 0.05019005999856103
+        "brier": 0.0501900599985696
       },
       "test": {
         "pr_auc": 0.981920837495963,
@@ -22,18 +22,18 @@
         "precision": 0.932,
         "recall": 0.9264413518886679,
         "accuracy": 0.929,
-        "brier": 0.05435504173506446
+        "brier": 0.05435504173507514
       }
     },
     "Decision Tree": {
       "cv": {
-        "pr_auc": 0.9785158204061754,
-        "roc_auc": 0.9810911942829943,
-        "f1": 0.9468869123252859,
-        "precision": 0.968798751950078,
+        "pr_auc": 0.9790650758243264,
+        "roc_auc": 0.9813598289538424,
+        "f1": 0.9471276054905948,
+        "precision": 0.9693028095733611,
         "recall": 0.9259443339960238,
-        "accuracy": 0.94775,
-        "brier": 0.04146788210830076
+        "accuracy": 0.948,
+        "brier": 0.04123321641697401
       },
       "test": {
         "pr_auc": 0.9784738057638899,
@@ -47,22 +47,42 @@
     },
     "Random Forest": {
       "cv": {
-        "pr_auc": 0.9981641718127946,
-        "roc_auc": 0.9979026744962819,
-        "f1": 0.9825523429710867,
-        "precision": 0.9855,
-        "recall": 0.9796222664015904,
-        "accuracy": 0.9825,
-        "brier": 0.023409502777777775
+        "pr_auc": 0.998065789155638,
+        "roc_auc": 0.9977752949106169,
+        "f1": 0.9805583250249252,
+        "precision": 0.9835,
+        "recall": 0.9776341948310139,
+        "accuracy": 0.9805,
+        "brier": 0.023649905555555555
       },
       "test": {
-        "pr_auc": 0.9981174411217965,
-        "roc_auc": 0.997891924109268,
-        "f1": 0.984984984984985,
-        "precision": 0.9919354838709677,
-        "recall": 0.9781312127236581,
-        "accuracy": 0.985,
-        "brier": 0.0214911
+        "pr_auc": 0.9982705926269093,
+        "roc_auc": 0.9980439295814648,
+        "f1": 0.9840319361277445,
+        "precision": 0.9879759519038076,
+        "recall": 0.9801192842942346,
+        "accuracy": 0.984,
+        "brier": 0.020832255555555554
+      }
+    },
+    "XGBoost": {
+      "cv": {
+        "pr_auc": 0.9995334499482882,
+        "roc_auc": 0.9995394834214031,
+        "f1": 0.9932718664340892,
+        "precision": 0.9960019990004998,
+        "recall": 0.9905566600397614,
+        "accuracy": 0.99325,
+        "brier": 0.005758459425809194
+      },
+      "test": {
+        "pr_auc": 0.9998620605420252,
+        "roc_auc": 0.9998559948158134,
+        "f1": 0.9960079840319361,
+        "precision": 1.0,
+        "recall": 0.9920477137176938,
+        "accuracy": 0.996,
+        "brier": 0.004477375238647964
       }
     }
   },
@@ -83,13 +103,13 @@
     }
   ],
   "calibrated_test": {
-    "pr_auc": 0.9956392358332312,
-    "roc_auc": 0.9965098743554768,
-    "f1": 0.984,
-    "precision": 0.9899396378269618,
-    "recall": 0.9781312127236581,
-    "accuracy": 0.984,
-    "brier": 0.013994308012018114
+    "pr_auc": 0.999693740556693,
+    "roc_auc": 0.9997559912156838,
+    "f1": 0.9940119760479041,
+    "precision": 0.9979959919839679,
+    "recall": 0.9900596421471173,
+    "accuracy": 0.994,
+    "brier": 0.00537259503490532
   },
   "leakage_audit": {
     "suspects": [
@@ -97,84 +117,84 @@
       "recency_bucket"
     ],
     "with_suspects": {
-      "pr_auc": 0.9981174411217965,
-      "roc_auc": 0.997891924109268,
-      "f1": 0.984984984984985,
-      "precision": 0.9919354838709677,
-      "recall": 0.9781312127236581,
-      "accuracy": 0.985,
-      "brier": 0.0214911
+      "pr_auc": 0.9998620605420252,
+      "roc_auc": 0.9998559948158134,
+      "f1": 0.9960079840319361,
+      "precision": 1.0,
+      "recall": 0.9920477137176938,
+      "accuracy": 0.996,
+      "brier": 0.004477375238647964
     },
     "without_suspects": {
-      "pr_auc": 0.988880574679118,
-      "roc_auc": 0.9887815961374609,
-      "f1": 0.9494163424124513,
-      "precision": 0.9295238095238095,
-      "recall": 0.9701789264413518,
-      "accuracy": 0.948,
-      "brier": 0.046771611111111104
+      "pr_auc": 0.9969469543153001,
+      "roc_auc": 0.996611878027609,
+      "f1": 0.9723320158102767,
+      "precision": 0.9666011787819253,
+      "recall": 0.9781312127236581,
+      "accuracy": 0.972,
+      "brier": 0.021635343527177296
     }
   },
   "drivers": [
     {
-      "feature": "avg_watch_time_per_day",
-      "importance": 0.19404812347302577
-    },
-    {
       "feature": "engagement_segment_High",
-      "importance": 0.1366390662071915
-    },
-    {
-      "feature": "watch_hours",
-      "importance": 0.12174319812730697
-    },
-    {
-      "feature": "last_login_days",
-      "importance": 0.08315173153329893
+      "importance": 0.4984062612056732
     },
     {
       "feature": "engagement_segment_Low",
-      "importance": 0.07202988662684326
+      "importance": 0.24320417642593384
     },
     {
-      "feature": "watch_per_profile",
-      "importance": 0.0607127748366884
-    },
-    {
-      "feature": "number_of_profiles",
-      "importance": 0.0584203513054468
+      "feature": "avg_watch_time_per_day",
+      "importance": 0.07638093829154968
     },
     {
       "feature": "recency_bucket_Dormant",
-      "importance": 0.0575884808697043
-    },
-    {
-      "feature": "engagement_segment_Medium",
-      "importance": 0.022875458671704207
-    },
-    {
-      "feature": "recency_bucket_Lapsing",
-      "importance": 0.02178724333047044
-    },
-    {
-      "feature": "monthly_fee",
-      "importance": 0.020325264647089898
-    },
-    {
-      "feature": "subscription_type_Basic",
-      "importance": 0.019119852562240074
+      "importance": 0.023659896105527878
     },
     {
       "feature": "payment_method_Crypto",
-      "importance": 0.016476112549367226
+      "importance": 0.018496491014957428
     },
     {
-      "feature": "age",
-      "importance": 0.013988389042041683
+      "feature": "subscription_type_Basic",
+      "importance": 0.017298739403486252
     },
     {
       "feature": "payment_method_Gift Card",
-      "importance": 0.01331951585869633
+      "importance": 0.016977472230792046
+    },
+    {
+      "feature": "number_of_profiles",
+      "importance": 0.016233712434768677
+    },
+    {
+      "feature": "monthly_fee",
+      "importance": 0.01571067050099373
+    },
+    {
+      "feature": "watch_hours",
+      "importance": 0.012452584691345692
+    },
+    {
+      "feature": "last_login_days",
+      "importance": 0.011448311619460583
+    },
+    {
+      "feature": "recency_bucket_Lapsing",
+      "importance": 0.007522681262344122
+    },
+    {
+      "feature": "recency_bucket_Active",
+      "importance": 0.004880557302385569
+    },
+    {
+      "feature": "watch_per_profile",
+      "importance": 0.0046453517861664295
+    },
+    {
+      "feature": "engagement_segment_Medium",
+      "importance": 0.002565585309639573
     }
   ]
 }

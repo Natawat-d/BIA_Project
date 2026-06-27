@@ -1,4 +1,4 @@
-.PHONY: setup db etl train score dashboard all clean
+.PHONY: setup db etl train score dashboard all clean up down rebuild
 PY ?= python
 
 setup:               ## create venv + install dependencies
@@ -23,3 +23,12 @@ all: etl train score ## run the full pipeline
 
 clean:               ## remove generated artifacts
 	rm -f data/processed/*.csv models/*.pkl reports/*.json
+
+up:                  ## Docker: build + run Postgres -> pipeline -> dashboard
+	docker compose up --build
+
+down:                ## Docker: stop everything (add ARGS=-v to wipe the DB)
+	docker compose down $(ARGS)
+
+rebuild:             ## Docker: re-run just the pipeline container
+	docker compose run --rm pipeline

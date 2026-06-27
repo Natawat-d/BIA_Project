@@ -17,6 +17,19 @@ make dashboard    # launch the Streamlit DSS
 ```
 Run the whole pipeline at once: `make all` then `make dashboard`.
 
+## Run with Docker (no local Python needed)
+```bash
+docker compose up --build
+```
+This starts **PostgreSQL**, runs the **pipeline** (ETL → train → score) once, then
+serves the **dashboard** at **http://localhost:8501**. The raw CSV is mounted from
+`../netflix_customer_churn.csv`; generated outputs are written back to the host.
+
+```bash
+docker compose run --rm pipeline   # re-run just the pipeline
+docker compose down                # stop everything (add -v to wipe the DB)
+```
+
 > If you are not using the Makefile, activate the venv and run the modules
 > directly: `python -m src.etl.load`, `python -m src.model.train`,
 > `python -m src.model.score`, `streamlit run app/Home.py`.

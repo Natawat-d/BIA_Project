@@ -1,5 +1,11 @@
-# Optional PostgreSQL BI layer. The pipeline and dashboard run without it
-# (they fall back to CSV), but this lets you demonstrate the star schema + views.
+# Full stack: PostgreSQL (BI layer) -> pipeline (ETL+train+score) -> dashboard.
+#
+#   docker compose up --build         # runs everything; dashboard at http://localhost:8501
+#   docker compose run --rm pipeline  # re-run just the pipeline
+#
+# The raw CSV is mounted from the parent folder (BIA_Project). Generated outputs
+# (data/processed, models, reports) are bind-mounted back to the host.
+
 services:
   postgres:
     image: postgres:16
@@ -9,8 +15,48 @@ services:
       POSTGRES_USER: netflix
       POSTGRES_PASSWORD: netflix
     ports:
-      - "5432:5432"
+      - "5544:5432"   # host:container — 5544 avoids clashing with a local Postgres on 5432
     volumes:
       - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U netflix -d netflix_dss"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  # Runs the pipeline once (ETL -> train -> score), then exits.
+  pipeline:
+    build: .
+    image: netflix_dss
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      PGHOST: postgres
+      NETFLIX_CSV: /data/netflix_customer_churn.csv
+    volumes:
+      - .:/app
+      - ../netflix_customer_churn.csv:/data/netflix_customer_churn.csv:ro
+    command: >
+      sh -c "python -m src.etl.load &&
+             python -m src.model.train &&
+             python -m src.model.score"
+
+  # Serves the Streamlit dashboard after the pipeline has produced outputs.
+  dashboard:
+    build: .
+    image: netflix_dss
+    depends_on:
+      pipeline:
+        condition: service_completed_successfully
+    environment:
+      PGHOST: postgres
+      NETFLIX_CSV: /data/netflix_customer_churn.csv
+    ports:
+      - "8501:8501"
+    volumes:
+      - .:/app
+      - ../netflix_customer_churn.csv:/data/netflix_customer_churn.csv:ro
+
 volumes:
   pgdata:
