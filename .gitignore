@@ -1,0 +1,14 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+.env
+
+# OS
+.DS_Store
+
+# Generated reports (regenerate via reports/make_chart_report.py / `make all`).
+# Ignore the reports/ folder except the generator script and metrics.json.
+/reports/*
+!/reports/make_chart_report.py
+!/reports/metrics.json
