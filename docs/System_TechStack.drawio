@@ -1,0 +1,92 @@
+<mxfile host="app.diagrams.net" type="device">
+  <diagram id="netflix-dss-stack" name="Technology Stack">
+    <mxGraphModel dx="1422" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1200" pageHeight="720" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- Title -->
+        <mxCell id="title" value="Netflix Customer Retention DSS  —  Technology Stack" style="text;html=1;fontSize=20;fontStyle=1;align=center;verticalAlign=middle;fontColor=#111111;" vertex="1" parent="1">
+          <mxGeometry x="90" y="18" width="1070" height="34" as="geometry" />
+        </mxCell>
+
+        <!-- left "uses" arrow -->
+        <mxCell id="usesarrow" value="each layer uses the one below" style="endArrow=block;html=1;rounded=0;strokeColor=#999999;strokeWidth=2;fontColor=#888888;fontSize=11;horizontal=0;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="62" y="110" as="sourcePoint" />
+            <mxPoint x="62" y="650" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- ================= LAYER BANDS ================= -->
+        <mxCell id="bd_pres" value="PRESENTATION LAYER   ·   Frontend / UI" style="rounded=1;arcSize=2;whiteSpace=wrap;html=1;fillColor=#FFF6F6;strokeColor=#CCCCCC;verticalAlign=top;align=left;fontStyle=1;fontSize=12;fontColor=#555555;spacingLeft=12;spacingTop=6;" vertex="1" parent="1">
+          <mxGeometry x="90" y="70" width="1070" height="95" as="geometry" />
+        </mxCell>
+        <mxCell id="bd_app" value="APPLICATION LAYER   ·   Logic &amp; Runtime" style="rounded=1;arcSize=2;whiteSpace=wrap;html=1;fillColor=#F5FAFE;strokeColor=#CCCCCC;verticalAlign=top;align=left;fontStyle=1;fontSize=12;fontColor=#555555;spacingLeft=12;spacingTop=6;" vertex="1" parent="1">
+          <mxGeometry x="90" y="180" width="1070" height="78" as="geometry" />
+        </mxCell>
+        <mxCell id="bd_ana" value="ANALYTICS &amp; ML LAYER   ·   data processing + modeling" style="rounded=1;arcSize=2;whiteSpace=wrap;html=1;fillColor=#FFFAF2;strokeColor=#CCCCCC;verticalAlign=top;align=left;fontStyle=1;fontSize=12;fontColor=#555555;spacingLeft=12;spacingTop=6;" vertex="1" parent="1">
+          <mxGeometry x="90" y="273" width="1070" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="bd_data" value="DATA &amp; STORAGE LAYER" style="rounded=1;arcSize=2;whiteSpace=wrap;html=1;fillColor=#F4F8FB;strokeColor=#CCCCCC;verticalAlign=top;align=left;fontStyle=1;fontSize=12;fontColor=#555555;spacingLeft=12;spacingTop=6;" vertex="1" parent="1">
+          <mxGeometry x="90" y="408" width="1070" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="bd_infra" value="INFRASTRUCTURE / DEVOPS   ·   🐳 containerized  ·  ☁️ hosts &amp; runs the entire stack above" style="rounded=1;arcSize=2;whiteSpace=wrap;html=1;fillColor=#F5FBF6;strokeColor=#CCCCCC;verticalAlign=top;align=left;fontStyle=1;fontSize=12;fontColor=#555555;spacingLeft=12;spacingTop=6;" vertex="1" parent="1">
+          <mxGeometry x="90" y="543" width="1070" height="120" as="geometry" />
+        </mxCell>
+
+        <!-- ================= PRESENTATION ================= -->
+        <mxCell id="t_streamlit" value="🟥 &lt;b&gt;Streamlit&lt;/b&gt;&lt;br&gt;Dashboard UI — multi-page&lt;br&gt;(Home · Descriptive · Churn Risk · Retention Sim)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFE9E9;strokeColor=#FF4B4B;fontColor=#333333;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="150" y="102" width="430" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="t_plotly" value="📊 &lt;b&gt;Plotly&lt;/b&gt;&lt;br&gt;Interactive charts&lt;br&gt;(donut · treemap · choropleth · waterfall)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E9ECF5;strokeColor=#3F4F75;fontColor=#333333;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="660" y="102" width="440" height="55" as="geometry" />
+        </mxCell>
+
+        <!-- ================= APPLICATION ================= -->
+        <mxCell id="t_python" value="🐍 &lt;b&gt;Python 3.11&lt;/b&gt;  —  application logic:  page scripts · lib/data_loader · lib/charts · @st.cache_data" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EAF3FA;strokeColor=#3776AB;fontColor=#333333;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="150" y="208" width="950" height="42" as="geometry" />
+        </mxCell>
+
+        <!-- ================= ANALYTICS & ML ================= -->
+        <mxCell id="t_pandas" value="🐼 &lt;b&gt;pandas&lt;/b&gt;&lt;br&gt;ETL &amp; feature engineering" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ECE9F5;strokeColor=#150458;fontColor=#333333;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="130" y="318" width="250" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="t_sklearn" value="&lt;b&gt;scikit-learn&lt;/b&gt;&lt;br&gt;LR · DT · RF · preprocessing&lt;br&gt;calibration · cross-validation" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FEF1E0;strokeColor=#F7931E;fontColor=#333333;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="400" y="318" width="270" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="t_xgb" value="&lt;b&gt;XGBoost&lt;/b&gt;&lt;br&gt;gradient-boosted trees&lt;br&gt;(best model)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E9F3F9;strokeColor=#1B75BB;fontColor=#333333;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="690" y="318" width="230" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="t_joblib" value="&lt;b&gt;joblib&lt;/b&gt;&lt;br&gt;model persistence&lt;br&gt;→ churn_model.pkl" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F0F0F0;strokeColor=#777777;fontColor=#333333;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="940" y="318" width="200" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- ================= DATA & STORAGE ================= -->
+        <mxCell id="t_pg" value="🐘 &lt;b&gt;PostgreSQL&lt;/b&gt;&lt;br&gt;BI layer — star schema&lt;br&gt;+ KPI views (optional)" style="shape=cylinder3;whiteSpace=wrap;html=1;fillColor=#E7EEF4;strokeColor=#336791;fontColor=#333333;fontSize=11;size=12;boundedLbl=1;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="150" y="450" width="330" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="t_driver" value="&lt;b&gt;SQLAlchemy + psycopg2&lt;/b&gt;&lt;br&gt;database access driver" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F0F0F0;strokeColor=#777777;fontColor=#333333;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="510" y="453" width="250" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="t_csv" value="📄 &lt;b&gt;CSV files&lt;/b&gt;&lt;br&gt;raw dataset + processed&lt;br&gt;(clean.csv · scored_customers.csv)" style="shape=note;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#999999;fontColor=#333333;fontSize=11;size=16;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="790" y="453" width="350" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- ================= INFRASTRUCTURE ================= -->
+        <mxCell id="t_docker" value="🐳 &lt;b&gt;Docker + Docker Compose&lt;/b&gt;&lt;br&gt;3 containers: postgres · pipeline · dashboard" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E6F3FD;strokeColor=#2496ED;fontColor=#333333;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="130" y="588" width="290" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="t_aws" value="☁️ &lt;b&gt;AWS EC2&lt;/b&gt;&lt;br&gt;cloud hosting (ap-southeast-7)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF3E0;strokeColor=#FF9900;fontColor=#333333;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="440" y="588" width="250" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="t_github" value="&lt;b&gt;GitHub&lt;/b&gt;&lt;br&gt;source control" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EDEDED;strokeColor=#24292E;fontColor=#333333;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="710" y="588" width="200" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="t_make" value="&lt;b&gt;Makefile + requirements.txt&lt;/b&gt;&lt;br&gt;build / orchestration" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F0F0F0;strokeColor=#777777;fontColor=#333333;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="930" y="588" width="210" height="60" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

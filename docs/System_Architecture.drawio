@@ -1,0 +1,132 @@
+<mxfile host="app.diagrams.net" type="device">
+  <diagram id="netflix-dss-arch" name="System Architecture">
+    <mxGraphModel dx="1422" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1200" pageHeight="800" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- Title -->
+        <mxCell id="title" value="Netflix Customer Retention Intelligence DSS  —  System Architecture" style="text;html=1;fontSize=20;fontStyle=1;align=center;verticalAlign=middle;fontColor=#111111;" vertex="1" parent="1">
+          <mxGeometry x="40" y="18" width="1120" height="34" as="geometry" />
+        </mxCell>
+
+        <!-- ================= LAYER BANDS (backgrounds) ================= -->
+        <mxCell id="bd_data" value="①  DATA LAYER" style="rounded=1;arcSize=2;whiteSpace=wrap;html=1;fillColor=#FDECEA;strokeColor=#E50914;verticalAlign=top;align=left;fontStyle=1;fontSize=13;fontColor=#B71C1C;spacingLeft=12;spacingTop=6;" vertex="1" parent="1">
+          <mxGeometry x="40" y="68" width="1120" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="bd_ana" value="②  ANALYTICS LAYER   ·   ETL → Data Preparation → Model" style="rounded=1;arcSize=2;whiteSpace=wrap;html=1;fillColor=#E8F1F8;strokeColor=#3A7CA5;verticalAlign=top;align=left;fontStyle=1;fontSize=13;fontColor=#1F4E6B;spacingLeft=12;spacingTop=6;" vertex="1" parent="1">
+          <mxGeometry x="40" y="238" width="1120" height="182" as="geometry" />
+        </mxCell>
+        <mxCell id="bd_pres" value="③  PRESENTATION LAYER   ·   Streamlit dashboard  (Simon: Intelligence → Design → Choice)" style="rounded=1;arcSize=2;whiteSpace=wrap;html=1;fillColor=#E9F7EF;strokeColor=#2E9E5B;verticalAlign=top;align=left;fontStyle=1;fontSize=13;fontColor=#1B5E37;spacingLeft=12;spacingTop=6;" vertex="1" parent="1">
+          <mxGeometry x="40" y="440" width="1120" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="bd_users" value="④  END USERS" style="rounded=1;arcSize=2;whiteSpace=wrap;html=1;fillColor=#F2F2F2;strokeColor=#777777;verticalAlign=top;align=left;fontStyle=1;fontSize=13;fontColor=#444444;spacingLeft=12;spacingTop=6;" vertex="1" parent="1">
+          <mxGeometry x="40" y="600" width="1120" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="bd_docker" value="🐳  Containerized with Docker Compose:  postgres + pipeline (ETL → train → score) + dashboard   ·   deterministic run (seed 42)   ·   deployed on AWS EC2 (ap-southeast-7)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#333333;dashed=1;align=center;verticalAlign=middle;fontStyle=2;fontSize=12;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="40" y="708" width="1120" height="44" as="geometry" />
+        </mxCell>
+
+        <!-- ================= DATA LAYER NODES ================= -->
+        <mxCell id="n_csv" value="Raw Dataset&lt;br&gt;netflix_customer_churn.csv&lt;br&gt;(5,000 rows · 14 columns)" style="shape=note;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#E50914;fontColor=#333333;fontSize=11;size=16;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="70" y="108" width="210" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="n_etl" value="ETL&lt;br&gt;&lt;b&gt;Extract → Transform (clean) → Load&lt;/b&gt;&lt;br&gt;src/etl/" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#E50914;fontColor=#333333;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="320" y="108" width="250" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="n_clean" value="Processed Data&lt;br&gt;data/processed/clean.csv" style="shape=note;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#E50914;fontColor=#333333;fontSize=11;size=16;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="620" y="108" width="210" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="n_pg" value="PostgreSQL (optional BI)&lt;br&gt;star schema + KPI views&lt;br&gt;sql/schema.sql" style="shape=cylinder3;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#E50914;fontColor=#333333;fontSize=11;size=14;boundedLbl=1;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="890" y="104" width="230" height="86" as="geometry" />
+        </mxCell>
+
+        <!-- ================= ANALYTICS LAYER NODES ================= -->
+        <mxCell id="n_prep" value="Data Preparation&lt;br&gt;feature engineering&lt;br&gt;(engagement segment, recency bucket)&lt;br&gt;+ stratified train / test split&lt;br&gt;src/prep/" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#3A7CA5;fontColor=#333333;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="70" y="285" width="220" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="n_train" value="Model Training&lt;br&gt;&lt;b&gt;LR · Decision Tree · Random Forest · XGBoost&lt;/b&gt;&lt;br&gt;naive baselines · k-fold CV&lt;br&gt;isotonic calibration · leakage audit&lt;br&gt;→ models/churn_model.pkl" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#3A7CA5;fontColor=#333333;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="330" y="285" width="280" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="n_eval" value="Evaluation&lt;br&gt;PR-AUC · F1 · Brier&lt;br&gt;→ reports/metrics.json" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#3A7CA5;fontColor=#333333;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="650" y="285" width="190" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="n_score" value="Scoring&lt;br&gt;churn_probability → risk_tier&lt;br&gt;→ revenue_at_risk → action&lt;br&gt;→ data/processed/&lt;br&gt;scored_customers.csv" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#3A7CA5;fontColor=#333333;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="880" y="285" width="240" height="120" as="geometry" />
+        </mxCell>
+
+        <!-- ================= PRESENTATION LAYER NODES ================= -->
+        <mxCell id="n_home" value="🏠 Home&lt;br&gt;Executive overview&lt;br&gt;&lt;i&gt;(Intelligence)&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#2E9E5B;fontColor=#333333;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="70" y="485" width="250" height="76" as="geometry" />
+        </mxCell>
+        <mxCell id="n_desc" value="📊 Descriptive Analytics&lt;br&gt;&lt;i&gt;(Intelligence)&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#2E9E5B;fontColor=#333333;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="350" y="485" width="240" height="76" as="geometry" />
+        </mxCell>
+        <mxCell id="n_risk" value="⚠️ Churn Risk&lt;br&gt;&lt;i&gt;(Design)&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#2E9E5B;fontColor=#333333;fontSize=11;align=center;verticalAlign=middle;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="630" y="485" width="210" height="76" as="geometry" />
+        </mxCell>
+        <mxCell id="n_sim" value="🎛️ Retention Simulation&lt;br&gt;&lt;i&gt;(Choice)&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#2E9E5B;fontColor=#333333;fontSize=11;align=center;verticalAlign=middle;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="880" y="485" width="240" height="76" as="geometry" />
+        </mxCell>
+        <mxCell id="n_pred_note" value="(predictive pages — scaffolded)" style="text;html=1;align=center;fontSize=9;fontStyle=2;fontColor=#888888;" vertex="1" parent="1">
+          <mxGeometry x="630" y="563" width="490" height="14" as="geometry" />
+        </mxCell>
+
+        <!-- ================= USERS NODES ================= -->
+        <mxCell id="n_u1" value="Customer Retention Manager &lt;b&gt;(primary)&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#777777;fontColor=#333333;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="70" y="638" width="320" height="42" as="geometry" />
+        </mxCell>
+        <mxCell id="n_u2" value="Marketing Manager" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#777777;fontColor=#333333;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="420" y="638" width="210" height="42" as="geometry" />
+        </mxCell>
+        <mxCell id="n_u3" value="Customer Success Manager" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#777777;fontColor=#333333;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="660" y="638" width="230" height="42" as="geometry" />
+        </mxCell>
+        <mxCell id="n_u4" value="Subscription Business Mgr" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#777777;fontColor=#333333;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="920" y="638" width="200" height="42" as="geometry" />
+        </mxCell>
+
+        <!-- ================= EDGES ================= -->
+        <mxCell id="e1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#555555;strokeWidth=1.5;endArrow=block;endFill=1;" edge="1" parent="1" source="n_csv" target="n_etl">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#555555;strokeWidth=1.5;endArrow=block;endFill=1;" edge="1" parent="1" source="n_etl" target="n_clean">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e3" value="load (optional)" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#999999;strokeWidth=1.5;endArrow=block;endFill=1;dashed=1;fontSize=10;fontColor=#777777;" edge="1" parent="1" source="n_etl" target="n_pg">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e4" value="train data" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#555555;strokeWidth=1.5;endArrow=block;endFill=1;fontSize=10;fontColor=#555555;" edge="1" parent="1" source="n_clean" target="n_prep">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e5" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#555555;strokeWidth=1.5;endArrow=block;endFill=1;" edge="1" parent="1" source="n_prep" target="n_train">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e6" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#555555;strokeWidth=1.5;endArrow=block;endFill=1;" edge="1" parent="1" source="n_train" target="n_eval">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e7" value="best model" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#555555;strokeWidth=1.5;endArrow=block;endFill=1;fontSize=10;fontColor=#555555;" edge="1" parent="1" source="n_train" target="n_score">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e8" value="reads CSV" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#2E9E5B;strokeWidth=1.5;endArrow=block;endFill=1;fontSize=10;fontColor=#2E9E5B;exitX=0.25;exitY=1;exitDx=0;exitDy=0;" edge="1" parent="1" source="n_clean" target="n_desc">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e9" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#2E9E5B;strokeWidth=1.5;endArrow=block;endFill=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;" edge="1" parent="1" source="n_clean" target="n_home">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e10" value="scored data" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#2E9E5B;strokeWidth=1.5;endArrow=block;endFill=1;dashed=1;fontSize=10;fontColor=#2E9E5B;" edge="1" parent="1" source="n_score" target="n_risk">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e11" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#2E9E5B;strokeWidth=1.5;endArrow=block;endFill=1;dashed=1;" edge="1" parent="1" source="n_score" target="n_sim">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e12" value="decision support" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#777777;strokeWidth=1.5;endArrow=block;endFill=1;fontSize=10;fontColor=#777777;exitX=0.25;exitY=1;exitDx=0;exitDy=0;" edge="1" parent="1" source="n_home" target="n_u1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e13" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#777777;strokeWidth=1.5;endArrow=block;endFill=1;" edge="1" parent="1" source="n_risk" target="n_u1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
