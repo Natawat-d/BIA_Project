@@ -181,6 +181,51 @@ def churn_waterfall(frame):
     return fig
 
 
+# ---------------------------------------------- retention-priority helpers ----
+# Break the book down by a manager-chosen dimension, scored on size, churn, and
+# annual revenue currently lost to churn (a descriptive number — no model).
+DIM_OPTS = {
+    "Subscription plan": "subscription_type",
+    "Region": "region",
+    "Engagement segment": "engagement_segment",
+    "Recency": "recency_bucket",
+}
+
+
+def priority_table(frame, dim):
+    grp = frame.groupby(dim)
+    out = pd.DataFrame({"subscribers": grp.size(),
+                        "churn_rate": grp["churned"].mean() * 100})
+    lost = frame.loc[frame["churned"] == 1].groupby(dim)["monthly_fee"].sum() * 12
+    out["arr_at_risk"] = lost.reindex(out.index).fillna(0)
+    out = out.reset_index().rename(columns={dim: "segment"})
+    out["segment"] = out["segment"].astype(str)
+    return out
+
+
+def priority_bubble(tbl, dim_label, overall_churn):
+    fig = px.scatter(tbl, x="subscribers", y="churn_rate", size="arr_at_risk",
+                     color="segment", text="segment", size_max=60,
+                     title=f"Retention priority by {dim_label.lower()}",
+                     labels={"subscribers": "Subscribers", "churn_rate": "Churn %"})
+    fig.add_hline(y=overall_churn, line_dash="dot",
+                  annotation_text=f"overall churn {overall_churn:.0f}%")
+    fig.update_traces(textposition="top center")
+    fig.update_layout(showlegend=False, margin=dict(t=46, b=10),
+                      yaxis_title="Churn %", xaxis_title="Subscribers")
+    return fig
+
+
+def risk_bar(tbl):
+    t = tbl.sort_values("arr_at_risk")
+    fig = px.bar(t, x="arr_at_risk", y="segment", orientation="h",
+                 title="Annual revenue at risk", color_discrete_sequence=[NETFLIX_RED])
+    fig.update_traces(texttemplate="$%{x:,.0f}", textposition="outside")
+    fig.update_layout(showlegend=False, xaxis_title="Annual revenue at risk ($)",
+                      yaxis_title="", margin=dict(t=46, b=10))
+    return fig
+
+
 t_churn, t_eng, t_behav, t_demo, t_seg = st.tabs([
     "🔁 Churn Patterns", "🎬 Engagement", "💳 Subscription Behavior",
     "👤 Demographics", "💰 Segments & Revenue",
@@ -259,6 +304,23 @@ with t_eng:
 
 # ------------------------------------------- 10+5+11. Segments & Revenue ------
 with t_seg:
+    st.subheader("Retention Priority — where to focus")
+    dim_label = st.radio("Break down by", list(DIM_OPTS), horizontal=True, key="priority_dim")
+    tbl = priority_table(df, DIM_OPTS[dim_label])
+    overall_churn = df["churned"].mean() * 100
+    top = tbl.sort_values("arr_at_risk", ascending=False).iloc[0]
+    st.info(f"🎯 **Focus here:** {dim_label.lower()} **{top['segment']}** — "
+            f"{top['churn_rate']:.0f}% churn and {fmt_money(top['arr_at_risk'])}/yr at risk "
+            f"across {int(top['subscribers']):,} subscribers.")
+    p1, p2 = st.columns(2)
+    with p1:
+        st.plotly_chart(priority_bubble(tbl, dim_label, overall_churn), use_container_width=True)
+    with p2:
+        st.plotly_chart(risk_bar(tbl), use_container_width=True)
+    st.caption("Bubble size = annual revenue lost to churn; dotted line = overall churn rate. "
+               "Segments that are high (above the line) **and** large (right) are the top priorities.")
+    st.divider()
+
     st.subheader("Behavioral Segmentation & Revenue Impact")
     c1, c2 = st.columns(2)
     with c1:
