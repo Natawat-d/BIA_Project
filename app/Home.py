@@ -26,7 +26,6 @@ from lib.charts import (
     priority_table,
     region_map,
     revenue_by_plan_bar,
-    revenue_treemap,
     risk_bar,
 )
 from lib.data_loader import has_clean, has_scored, load_clean, load_scored
@@ -220,10 +219,9 @@ with t_rev:
         fig.update_layout(xaxis_title="", margin=dict(t=46, b=10))
         st.plotly_chart(fig, use_container_width=True)  # stacked bar
     with v2:
-        st.plotly_chart(revenue_treemap(df), use_container_width=True)  # treemap
-    st.plotly_chart(revenue_by_plan_bar(df), use_container_width=True)
+        st.plotly_chart(revenue_by_plan_bar(df), use_container_width=True)
     st.caption("Stacked bar → customers per engagement segment (split by churn). "
-               "Treemap → revenue share by plan & status.")
+               "Bar → revenue (MRR) by plan.")
 
 # ----------------------------------------------- predictive preview (opt) ----
 if has_scored():
