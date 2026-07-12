@@ -12,3 +12,4 @@ __pycache__/
 /reports/*
 !/reports/make_chart_report.py
 !/reports/metrics.json
+!/reports/make_final_report_docx.py
