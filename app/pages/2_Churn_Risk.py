@@ -63,8 +63,8 @@ with left:
                       yaxis_title="", legend_title="")
     st.plotly_chart(fig, use_container_width=True)
     st.caption(f"Best model by CV PR-AUC: **{metrics.get('best_model', '?')}** — "
-               "selected on cross-validation, then isotonic-calibrated. Baselines show "
-               "the ML models clearly earn their place.")
+               "selected on cross-validation, then Platt-calibrated (sigmoid). Baselines "
+               "show the ML models clearly earn their place.")
 
 with right:
     st.subheader("Key churn drivers — feature importance")
@@ -98,8 +98,11 @@ with st.expander("📐 How the churn probability is computed (methodology)"):
    logistic regression = `w·x + b`; XGBoost = base + the sum of 400 boosted trees' leaf scores.
 3. **Sigmoid** — `p = 1/(1+e^−score)` maps the raw score to a 0–1 probability
    (a link function, not normalisation).
-4. **Isotonic calibration** — `CalibratedClassifierCV(method="isotonic", cv=5)` remaps
-   the raw probability so a predicted 30% churns ~30% of the time (Brier ≈ 0.005).
+4. **Platt calibration (sigmoid)** — `CalibratedClassifierCV(method="sigmoid", cv=5)` fits a
+   logistic curve that remaps the raw probability so a predicted 30% churns ~30% of the time
+   (Brier ≈ 0.005). We use Platt rather than isotonic here because isotonic collapsed to a
+   step function emitting exact 0%/100% on this near-separable data; the sigmoid stays smooth
+   and never claims absolute certainty — probabilities span 0.7%–99.6%.
 5. **Business outputs** — `risk_tier` (Low ≤ 0.40 · High ≥ 0.70), and
    `revenue_at_risk = p × monthly_fee × 12`.
 

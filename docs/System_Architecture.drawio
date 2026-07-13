@@ -38,7 +38,7 @@
         <mxCell id="train" value="&lt;b&gt;Model Training&lt;/b&gt; — LR · DT · RF · XGBoost&lt;br&gt;&lt;i&gt;scikit-learn · xgboost&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;gradientColor=#EAF2FB;gradientDirection=north;strokeColor=#3776AB;strokeWidth=1.5;fontColor=#333333;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1">
           <mxGeometry x="312" y="336" width="260" height="66" as="geometry" />
         </mxCell>
-        <mxCell id="score" value="&lt;b&gt;Scoring&lt;/b&gt; — probability · risk tier · $ at risk&lt;br&gt;&lt;i&gt;+ isotonic calibration&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;gradientColor=#EAF2FB;gradientDirection=north;strokeColor=#3776AB;strokeWidth=1.5;fontColor=#333333;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1">
+        <mxCell id="score" value="&lt;b&gt;Scoring&lt;/b&gt; — probability · risk tier · $ at risk&lt;br&gt;&lt;i&gt;+ Platt calibration&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;gradientColor=#EAF2FB;gradientDirection=north;strokeColor=#3776AB;strokeWidth=1.5;fontColor=#333333;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1">
           <mxGeometry x="312" y="414" width="260" height="60" as="geometry" />
         </mxCell>
 

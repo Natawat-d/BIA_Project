@@ -36,9 +36,9 @@ Finally, we thank our families for their support during the weeks this project r
 
 Subscription streaming platforms depend on recurring monthly fees, which makes customer churn a direct and compounding threat to revenue, yet retention teams typically lack tools that tell them who to save first and how much is at stake. This project presents the design, implementation, and evaluation of a fully deployed decision support system (DSS) for a Netflix-style streaming service that answers four operational questions: what characterises the subscriber base, which factors drive churn and how much revenue they endanger, whether individual churn risk can be predicted reliably enough to rank customers for retention spending, and how predictions should be delivered as decisions.
 
-The system is a reproducible ETL → Data Preparation → Model → Dashboard pipeline (fixed seed 42, one-command rebuild) over the 5,000-subscriber, 14-column Netflix Customer Churn dataset (Kaggle; churn rate 50.3%, MRR $68,417). A PostgreSQL warehouse (fact table plus three KPI views) supports the descriptive layer; four classifiers — Logistic Regression, Decision Tree, Random Forest, and XGBoost — are trained inside leak-free pipelines with stratified cross-validation, naive baselines, and isotonic calibration. The CV-selected XGBoost attains held-out PR-AUC 1.000 (calibrated 0.9997, Brier 0.0054) against baselines of 0.503 and 0.708. Because a near-perfect score is a red flag rather than a triumph, the report contributes two validity diagnostics: an overfitting check (train-test PR-AUC gaps of +0.0001 to +0.016 across all four models; even a ~35-parameter linear model scores 0.982, so the results cannot be memorization) and a feature-family ablation (removing engagement features collapses PR-AUC to 0.796; demographics alone reach 0.578, barely above random 0.503), which localizes all predictive signal in behavior while disclosing that a snapshot dataset cannot distinguish early-warning signal from post-churn artifact — the reported scores are therefore an upper bound.
+The system is a reproducible ETL → Data Preparation → Model → Dashboard pipeline (fixed seed 42, one-command rebuild) over the 5,000-subscriber, 14-column Netflix Customer Churn dataset (Kaggle; churn rate 50.3%, MRR $68,417). A PostgreSQL warehouse (fact table plus three KPI views) supports the descriptive layer; four classifiers — Logistic Regression, Decision Tree, Random Forest, and XGBoost — are trained inside leak-free pipelines with stratified cross-validation, naive baselines, and Platt (sigmoid) calibration. The CV-selected XGBoost attains held-out PR-AUC 1.000 (calibrated 0.9999, Brier 0.0052) against baselines of 0.503 and 0.708. Because a near-perfect score is a red flag rather than a triumph, the report contributes two validity diagnostics: an overfitting check (train-test PR-AUC gaps of +0.0001 to +0.016 across all four models; even a ~35-parameter linear model scores 0.982, so the results cannot be memorization) and a feature-family ablation (removing engagement features collapses PR-AUC to 0.796; demographics alone reach 0.578, barely above random 0.503), which localizes all predictive signal in behavior while disclosing that a snapshot dataset cannot distinguish early-warning signal from post-churn artifact — the reported scores are therefore an upper bound.
 
-Scoring all 5,000 customers yields 2,507 high-risk subscribers and ≈$397,289 of annual revenue at risk; under a transparent accounting formula (Σ revenue at risk × assumed save rate) a 30% save rate on the high-risk tier corresponds to ≈$118,000/year of retention opportunity ($39k/$79k/$158k at 10%/20%/40%). The four-page Streamlit dashboard — Home, Descriptive Analytics, Churn Risk, and Customer Simulation — maps onto Simon's Intelligence–Design–Choice framework and runs live on AWS EC2 via Docker Compose, including a customer-level what-if simulator driven by the trained calibrated model. The contribution of the project is threefold: a reproducible open-data churn-DSS pipeline, an explicit account of how a calibrated churn probability is computed (log-odds → sigmoid, verified exact → isotonic calibration), and a validity-diagnostic framework that protects against over-selling near-perfect scores on synthetic, highly separable data.
+Scoring all 5,000 customers yields 2,510 high-risk subscribers and ≈$397,353 of annual revenue at risk; under a transparent accounting formula (Σ revenue at risk × assumed save rate) a 30% save rate on the high-risk tier corresponds to ≈$118,000/year of retention opportunity ($39k/$79k/$157k at 10%/20%/40%). The four-page Streamlit dashboard — Home, Descriptive Analytics, Churn Risk, and Customer Simulation — maps onto Simon's Intelligence–Design–Choice framework and runs live on AWS EC2 via Docker Compose, including a customer-level what-if simulator driven by the trained calibrated model. The contribution of the project is threefold: a reproducible open-data churn-DSS pipeline, an explicit account of how a calibrated churn probability is computed (log-odds → sigmoid, verified exact → Platt calibration), and a validity-diagnostic framework that protects against over-selling near-perfect scores on synthetic, highly separable data.
 
 Keywords: decision support system, customer churn, retention, XGBoost, calibration, PR-AUC, Netflix, subscription streaming
 
@@ -111,7 +111,7 @@ Predicting customer defection from historical behavioral attributes is a long-es
 
 ## 2.2 Probability Outputs and Calibration
 
-Churn intervention requires a *ranked* list (whom to contact first) and *dollar weighting* (probability × revenue), so the model must output a probability, not a 0/1 label. Classifiers produce probabilities by mapping an unbounded raw score (log-odds) through the logistic (sigmoid) function; however, these raw probabilities are often poorly calibrated, and boosted trees in particular tend to be over-confident (Niculescu-Mizil & Caruana, 2005). Two standard post-hoc corrections exist: Platt scaling, which fits a sigmoid to the scores (Platt, 1999), and isotonic regression, a non-parametric monotonic remapping (Zadrozny & Elkan, 2002). We use **isotonic calibration**, following Niculescu-Mizil and Caruana's (2005) finding that it is the more effective correction for tree ensembles when sufficient data is available.
+Churn intervention requires a *ranked* list (whom to contact first) and *dollar weighting* (probability × revenue), so the model must output a probability, not a 0/1 label. Classifiers produce probabilities by mapping an unbounded raw score (log-odds) through the logistic (sigmoid) function; however, these raw probabilities are often poorly calibrated, and boosted trees in particular tend to be over-confident (Niculescu-Mizil & Caruana, 2005). Two standard post-hoc corrections exist: Platt scaling, which fits a sigmoid to the scores (Platt, 1999), and isotonic regression, a non-parametric monotonic remapping (Zadrozny & Elkan, 2002). We evaluated both: isotonic calibration was applied first, following Niculescu-Mizil and Caruana's (2005) finding that it is the more effective correction for tree ensembles when sufficient data is available, but on this nearly separable data its step function emitted exact 0% and 100% probabilities — unacceptable for decision support. The final system therefore uses **Platt scaling**, which keeps every probability strictly within (0,1).
 
 ## 2.3 Evaluation Metrics for Churn Models
 
@@ -123,7 +123,7 @@ The system design follows Simon's (1960) three-phase model of decision making �
 
 ## 2.5 Chapter Summary
 
-The literature supports four design commitments carried through this project: an ensemble-centred model portfolio with an interpretable baseline (2.1); probability-first outputs with isotonic calibration (2.2); PR-AUC-led evaluation against naive baselines (2.3); and a Simon-framework DSS over a warehouse-backed descriptive layer (2.4).
+The literature supports four design commitments carried through this project: an ensemble-centred model portfolio with an interpretable baseline (2.1); probability-first outputs with Platt calibration (2.2); PR-AUC-led evaluation against naive baselines (2.3); and a Simon-framework DSS over a warehouse-backed descriptive layer (2.4).
 
 # 3. Methodology
 
@@ -174,7 +174,7 @@ This is the core of the predictive system, stated precisely:
 
 1. **Raw score (log-odds).** Each classifier outputs an unbounded real-valued score. For Logistic Regression this is the linear combination *z = w·x + b*; for XGBoost it is the *margin* — a base value (initialised at the population churn rate, expressed in log-odds) plus the sum of all 400 boosted trees' leaf scores, each tree fit to correct the residual errors of its predecessors (Chen & Guestrin, 2016). We verified empirically that the margin is exactly additive and ranges roughly −15 to +17 on our data.
 2. **Sigmoid link.** The logistic function *p = 1 / (1 + e^(−z))* maps the raw score to (0, 1). We verified that `sigmoid(raw score)` reproduces the library's `predict_proba` output exactly — maximum difference 0.0 across all 5,000 customers, for both Logistic Regression and XGBoost.
-3. **Isotonic calibration.** Because boosted trees are characteristically over-confident (Niculescu-Mizil & Caruana, 2005), the selected model is wrapped in `CalibratedClassifierCV(method="isotonic", cv=5)` (Zadrozny & Elkan, 2002) — preferred over Platt scaling (Platt, 1999) for tree ensembles — so that a predicted 30% corresponds to an empirical churn rate of ≈30%. Calibration quality is measured by the Brier score (0.005 on the held-out test set).
+3. **Platt (sigmoid) calibration.** Because boosted trees are characteristically over-confident (Niculescu-Mizil & Caruana, 2005), the selected model is wrapped in `CalibratedClassifierCV(method="sigmoid", cv=5)`. Isotonic regression (Zadrozny & Elkan, 2002) was applied first, following the finding that it suits tree ensembles; on this nearly separable data, however, the isotonic step function degenerated into emitting exact 0% and 100% probabilities — unacceptable for decision support, where no customer is *certain* to churn or to stay. The final system therefore uses Platt scaling (Platt, 1999), whose smooth sigmoid fit keeps every probability strictly inside (0,1) — final range 0.7%–99.6% — at identical calibration quality: a predicted 30% corresponds to an empirical churn rate of ≈30%, measured by the Brier score (0.005 on the held-out test set).
 4. **Business outputs.** The calibrated probability is converted into decision-ready fields per customer: `risk_tier` (Low ≤ 0.40; High ≥ 0.70; Medium otherwise), `revenue_at_risk = p × monthly_fee × 12`, and a tier-mapped `recommended_action`.
 
 **Why a probability rather than a 0/1 label?** A hard label answers only "will they churn?"; retention management needs "who first, and how much is at stake?" A calibrated probability supports ranking customers under limited campaign budgets, revenue weighting (p × fee), and transparent, adjustable tier thresholds — none of which a binary label provides (Neslin et al., 2006; Verbeke et al., 2012).
@@ -215,7 +215,7 @@ where per-customer revenue at risk is *p × monthly_fee × 12*. Save rates are s
 
 ## 3.8 Chapter Summary
 
-The methodology combines a cleaned, warehouse-backed data layer (3.1); three engineered features with documented evidence of use (3.2); a four-model portfolio selected by cross-validation inside leak-free pipelines (3.3); a precisely stated probability chain — log-odds → sigmoid (verified exact) → isotonic calibration → business outputs (3.4); baselines, a leakage audit, and two validity diagnostics (3.5); a reproducible Dockerised architecture deployed on AWS (3.6); and a transparent business-impact accounting (3.7).
+The methodology combines a cleaned, warehouse-backed data layer (3.1); three engineered features with documented evidence of use (3.2); a four-model portfolio selected by cross-validation inside leak-free pipelines (3.3); a precisely stated probability chain — log-odds → sigmoid (verified exact) → Platt calibration → business outputs (3.4); baselines, a leakage audit, and two validity diagnostics (3.5); a reproducible Dockerised architecture deployed on AWS (3.6); and a transparent business-impact accounting (3.7).
 
 # 4. Results and Discussion
 
@@ -243,11 +243,11 @@ Table 4.1 — Held-out test performance (20%, stratified) versus naive baselines
 | *Baseline: majority class* | *0.503* | — | — | — | — | *0.503* |
 | *Baseline: inactive ≥ 27 days* | *0.708* | — | — | — | — | *0.741* |
 
-The calibrated XGBoost reaches test PR-AUC 0.9997 with Brier score 0.0054. The key churn drivers by feature importance are engagement and recency: `engagement_segment_High` (0.498) and `engagement_segment_Low` (0.243) rank first and second, `recency_bucket_Dormant` fourth; demographics contribute little. **Leakage audit:** retraining the selected model without `last_login_days` and `recency_bucket` moved PR-AUC from 0.9999 to 0.9969 — a delta of only 0.003 — so the near-perfect score is not a recency shortcut. Because the data is balanced 50/50, the usual "accuracy is misleading for rare churn" argument does *not* apply here; we lead with PR-AUC for business focus and transferability to real, imbalanced churn data.
+The calibrated XGBoost reaches test PR-AUC 0.9999 with Brier score 0.0052. The key churn drivers by feature importance are engagement and recency: `engagement_segment_High` (0.498) and `engagement_segment_Low` (0.243) rank first and second, `recency_bucket_Dormant` fourth; demographics contribute little. **Leakage audit:** retraining the selected model without `last_login_days` and `recency_bucket` moved PR-AUC from 0.9999 to 0.9969 — a delta of only 0.003 — so the near-perfect score is not a recency shortcut. Because the data is balanced 50/50, the usual "accuracy is misleading for rare churn" argument does *not* apply here; we lead with PR-AUC for business focus and transferability to real, imbalanced churn data.
 
 ## 4.3 Validity Diagnostics: Overfitting Check and Feature-Family Ablation
 
-**Model status.** The deployed model is *unchanged*: it remains the CV-selected, isotonic-calibrated XGBoost. No retrained "fixed" model exists, deliberately — the open validity question is *temporal* (does low engagement precede churn as an early warning, or partly follow it as a post-churn artifact?), and a snapshot dataset with no timestamps cannot answer it; retraining on the same snapshot would change nothing. The honest corrective is disclosure plus the two diagnostics below, with temporal (longitudinal) data named as future work.
+**Model status.** The deployed classifier is *unchanged*: it remains the CV-selected XGBoost (only its calibration wrapper was switched from isotonic to Platt scaling, which does not alter the classifier or its ranking). No retrained "fixed" model exists, deliberately — the open validity question is *temporal* (does low engagement precede churn as an early warning, or partly follow it as a post-churn artifact?), and a snapshot dataset with no timestamps cannot answer it; retraining on the same snapshot would change nothing. The honest corrective is disclosure plus the two diagnostics below, with temporal (longitudinal) data named as future work.
 
 **Diagnostic 1 — the near-perfect scores are not overfitting.**
 
@@ -260,7 +260,7 @@ Table 4.2 — Train vs. cross-validation vs. held-out-test PR-AUC.
 | Random Forest | 1.000 | 0.998 (±0.001) | 0.998 | +0.002 |
 | XGBoost | 1.000 | 0.9995 (±0.0004) | 0.9999 | +0.0001 |
 
-The generalization gap is near zero for every model and fold-to-fold variance is tiny; an overfit model shows a large train–test gap, not this. Decisively, even the ≈35-parameter Logistic Regression — far too small to memorize 4,000 training rows — scores 0.982, so the near-perfect results cannot be memorization: the classes really are that separable. Consistent with this, the deployed probability distribution is bimodal — 98.4% of the 5,000 calibrated probabilities are below 5% or above 95%, and only 4 customers fall in the Medium band (0.40–0.70) — and calibration (Brier 0.005) confirms these extreme probabilities are empirically *accurate* rather than over-confident.
+The generalization gap is near zero for every model and fold-to-fold variance is tiny; an overfit model shows a large train–test gap, not this. Decisively, even the ≈35-parameter Logistic Regression — far too small to memorize 4,000 training rows — scores 0.982, so the near-perfect results cannot be memorization: the classes really are that separable. Consistent with this, the deployed probability distribution is bimodal — 98.9% of the 5,000 calibrated probabilities are below 5% or above 95%, and only 1 customer falls in the Medium band (0.40–0.70) — and calibration (Brier 0.005) confirms these extreme probabilities are empirically *accurate* rather than over-confident.
 
 **Diagnostic 2 — feature-family ablation localizes the signal.**
 
@@ -278,7 +278,7 @@ Essentially all predictive signal is behavioral: removing the engagement family 
 
 ## 4.4 Business Impact
 
-Scoring all 5,000 customers with the calibrated model yields **2,507 high-risk customers**, total annual revenue at risk ≈ **$397,289**, and a mean predicted churn probability of 50.4% (consistent with the actual churn rate of 50.3%). The tier distribution is Low 2,489 / Medium 4 / High 2,507 — the near-empty Medium band is itself diagnostic of the saturated probabilities discussed in Section 4.3.
+Scoring all 5,000 customers with the calibrated model yields **2,510 high-risk customers**, total annual revenue at risk ≈ **$397,353**, and a mean predicted churn probability of 50.4% (consistent with the actual churn rate of 50.3%). The tier distribution is Low 2,489 / Medium 1 / High 2,510 — the near-empty Medium band is itself diagnostic of the bimodal probabilities discussed in Section 4.3 (spanning 0.7%–99.6%, never exactly certain under Platt scaling).
 
 Applying the accounting formula of Section 3.7 to the high-risk tier, a 30% save rate corresponds to ≈ **$118,000/year** of retention opportunity on a $68k-MRR book. Table 4.4 shows sensitivity; the figures are decision-support references, not forecasts.
 
@@ -286,7 +286,7 @@ Table 4.4 — Retention-opportunity sensitivity to the save-rate assumption (hig
 
 | Save rate | 10% | 20% | 30% (midpoint) | 40% |
 |---|---|---|---|---|
-| Annual opportunity | ≈$39k | ≈$79k | ≈$118k | ≈$158k |
+| Annual opportunity | ≈$39k | ≈$79k | ≈$118k | ≈$157k |
 
 ## 4.5 Page-by-Page Walkthrough
 
@@ -312,9 +312,9 @@ Table 4.5 — Example rows from the delivered prediction table (IDs truncated).
 
 | Customer ID | Churn prob. | Risk tier | Revenue at risk | Key factor (illustrative) | Recommended action |
 |---|---|---|---|---|---|
-| `49a5df…` | 99.6% | High | $167.25/yr | Low engagement | Offer targeted discount / personalized content |
-| `2f2b96…` | 69.3% | Medium | $74.77/yr | Stable usage | Send re-engagement campaign |
-| `09746f…` | 9.2% | Low | $15.52/yr | Low recent activity | Maintain engagement / loyalty rewards |
+| `39a2da…` | 99.6% | High | $215.05/yr | Low engagement | Offer targeted discount / personalized content |
+| `92ba88…` | 60.4% | Medium | $65.11/yr | Stable usage | Send re-engagement campaign |
+| `5ee0ae…` | 0.7% | Low | $1.26/yr | Higher plan cost | Maintain engagement / loyalty rewards |
 
 ## 4.6 Discussion
 
@@ -337,7 +337,7 @@ XGBoost was selected by cross-validation and remains deployed, calibrated, and u
 
 ## 4.7 Chapter Summary
 
-Descriptive analytics located churn in behavior (plan, engagement, recency) and quantified its cost (48.2% of MRR). Four models cleared both baselines by wide margins; the CV-selected XGBoost reached PR-AUC ≈1.000, which the validity diagnostics show is genuine separability of synthetic data rather than overfitting, while bounding what the score can claim. Scoring produced a prioritised, dollar-weighted customer list (2,507 high-risk; ≈$397k at risk; ≈$118k opportunity at a 30% save rate), delivered through a four-page deployed dashboard whose pages map onto Intelligence, Design, and Choice.
+Descriptive analytics located churn in behavior (plan, engagement, recency) and quantified its cost (48.2% of MRR). Four models cleared both baselines by wide margins; the CV-selected XGBoost reached PR-AUC ≈1.000, which the validity diagnostics show is genuine separability of synthetic data rather than overfitting, while bounding what the score can claim. Scoring produced a prioritised, dollar-weighted customer list (2,510 high-risk; ≈$397k at risk; ≈$118k opportunity at a 30% save rate), delivered through a four-page deployed dashboard whose pages map onto Intelligence, Design, and Choice.
 
 # 5. Conclusion and Recommendations
 
@@ -348,7 +348,7 @@ Mapped to the five objectives of Section 1.4:
 1. **Customer characteristics and behavior — achieved.** Full demographic, behavioral, and subscription profiling with interactive filtering (five descriptive tabs).
 2. **Churn patterns and engagement — achieved.** Plan tier, engagement, and recency identified as the dominant churn dimensions (Basic 62%; low-engagement 91%; Dormant 75%); geography shown to be immaterial.
 3. **Revenue impact — achieved.** 48.2% of MRR ($33,010) tied to churners; revenue at risk per customer and segment; revenue-weighted priority view.
-4. **Predictive churn analysis — achieved with disclosed caveats.** Four models under a leak-free, cross-validated protocol with baselines, isotonic calibration (Brier 0.005), a leakage audit (delta 0.003), an overfitting check (gaps ≤ +0.016), and a feature-family ablation localizing the signal in behavior; XGBoost selected by CV and retained deployed, with the scores framed as an upper bound on real-world performance.
+4. **Predictive churn analysis — achieved with disclosed caveats.** Four models under a leak-free, cross-validated protocol with baselines, Platt calibration (Brier 0.005), a leakage audit (delta 0.003), an overfitting check (gaps ≤ +0.016), and a feature-family ablation localizing the signal in behavior; XGBoost selected by CV and retained deployed, with the scores framed as an upper bound on real-world performance.
 5. **Interactive dashboard — achieved and deployed.** A four-page DSS mapped to Simon's Intelligence–Design–Choice framework, running live on AWS EC2 via Docker Compose, including a customer-level what-if simulator driven by the trained calibrated model.
 
 ## 5.2 Recommendations

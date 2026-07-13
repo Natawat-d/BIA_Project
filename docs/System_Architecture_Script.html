@@ -106,7 +106,8 @@
       <b>no leakage</b>.</p>
     <p>We train <b>four models</b> — Logistic Regression, Decision Tree, Random Forest, and
       <b>XGBoost</b> — and automatically select the best by <b>cross-validated PR-AUC</b>,
-      then <b>calibrate</b> it with isotonic regression so the probabilities are trustworthy.
+      then <b>calibrate</b> it with Platt scaling (a smooth sigmoid fit) so the probabilities are trustworthy
+      and never exactly 0% or 100%.
       The <b>Scoring</b> step outputs, for every customer, a <b>churn probability</b>, a
       <b>risk tier</b>, the <b>revenue at risk</b>, and a recommended action.</p>
     <div class="cue"><b>Point to:</b> the <b>Pipeline container</b> — ETL → Prep → Training → Scoring — and the <b>model.pkl</b> in the volume.</div>

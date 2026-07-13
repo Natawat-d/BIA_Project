@@ -95,8 +95,9 @@ st.caption("Ten preset customer profiles spanning the risk spectrum, all scored 
            "(engagement segment, recency bucket) are derived exactly as in training.")
 
 # Each persona is a full raw-feature row (validated against the dataset's
-# category values and slider ranges). Behaviour values were tuned so the panel
-# spans Low -> Medium -> High risk with ten distinct scores.
+# category values and slider ranges). Behaviour values were tuned against the
+# Platt-calibrated model so the panel spans Low -> Medium -> High risk with ten
+# distinct scores (~0.7% to ~99.6%; verified 2026-07-13: 4 Low / 3 Medium / 3 High).
 PERSONAS = [
     dict(name="🎬 Binge-watching Premium loyalist",
          blurb="4.5 h/day, logged in yesterday, four profiles — nothing to worry about.",
@@ -119,7 +120,7 @@ PERSONAS = [
     dict(name="👨‍👩‍👧 Family plan, cooling off",
          blurb="Three profiles on the TV but almost nothing watched lately — one to watch.",
          age=41, gender="Male", subscription_type="Standard", monthly_fee=13.99,
-         watch_hours=1.0, avg_watch_time_per_day=0.12, last_login_days=5,
+         watch_hours=1.0, avg_watch_time_per_day=0.12, last_login_days=4,
          number_of_profiles=3, region="North America", device="TV",
          payment_method="PayPal", favorite_genre="Comedy"),
     dict(name="🌗 On-the-fence newcomer",
@@ -135,9 +136,9 @@ PERSONAS = [
          number_of_profiles=2, region="North America", device="Laptop",
          payment_method="PayPal", favorite_genre="Drama"),
     dict(name="💤 Lapsing casual viewer",
-         blurb="Low engagement, five days since login — right at the High-risk doorstep.",
+         blurb="Low engagement, four days since login — right at the High-risk doorstep.",
          age=35, gender="Male", subscription_type="Standard", monthly_fee=13.99,
-         watch_hours=1.0, avg_watch_time_per_day=0.12, last_login_days=5,
+         watch_hours=1.0, avg_watch_time_per_day=0.12, last_login_days=4,
          number_of_profiles=2, region="Europe", device="Laptop",
          payment_method="PayPal", favorite_genre="Action"),
     dict(name="📉 Once-regular, tapering fast",

@@ -116,7 +116,9 @@ def run() -> None:
     # select best by CV PR-AUC, then calibrate
     best_name = max(results, key=lambda k: results[k]["cv"]["pr_auc"])
     log.info("Best model by CV PR-AUC: %s", best_name)
-    calibrated = CalibratedClassifierCV(fitted[best_name], method="isotonic", cv=5)
+    # sigmoid (Platt), not isotonic: on near-separable data isotonic degenerates
+    # to a step function emitting exact 0/1; Platt keeps probabilities in (0, 1)
+    calibrated = CalibratedClassifierCV(fitted[best_name], method="sigmoid", cv=5)
     calibrated.fit(X_tr, y_tr)
     cal_metrics = score_metrics(y_te, calibrated.predict_proba(X_te)[:, 1])
     log.info("Calibrated %s | PR-AUC=%.3f Brier=%.3f", best_name,
